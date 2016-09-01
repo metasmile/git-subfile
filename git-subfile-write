@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+TARGET_DIR=$1
+HOST_REPO=$(pwd)
+DEST_REPO=$2
+
+cd "$DEST_REPO"
+git stash
+cd "$HOST_REPO"
+rsync -av --exclude=.git* $HOST_REPO/$TARGET_DIR/* $DEST_REPO
+latest_commit_msg=$(git show --no-patch --oneline $(git rev-list -1 HEAD -- "$TARGET_DIR"))
+cd "$DEST_REPO"
+git add .
+git commit -m "$latest_commit_msg"
+git stash pop
+cd -
